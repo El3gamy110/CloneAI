@@ -1,17 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import OpenAI from 'openai'
 import userIcon from '../assets/user-icon.png'
 import chatgptIcon from '../assets/chatgpt.png'
 import sendIcon from '../assets/send.svg'
 
-// Initialize OpenAI client to route requests through Groq API
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_GROQ_API_KEY,
-  baseURL: 'https://api.groq.com/openai/v1',
-  dangerouslyAllowBrowser: true // Required for client-side API requests
-})
+function Chat({ activeQuery, clearActiveQuery, newChatTrigger, apiKey }) {
+  // Memoize OpenAI client to avoid recreating on every render or crashing on load when key is empty
+  const openai = useMemo(() => {
+    if (!apiKey) return null
+    return new OpenAI({
+      apiKey: apiKey,
+      baseURL: 'https://api.groq.com/openai/v1',
+      dangerouslyAllowBrowser: true // Required for client-side API requests
+    })
+  }, [apiKey])
 
-function Chat({ activeQuery, clearActiveQuery, newChatTrigger }) {
   const [messages, setMessages] = useState([
     {
       sender: 'gpt',
@@ -65,6 +68,14 @@ function Chat({ activeQuery, clearActiveQuery, newChatTrigger }) {
   }
 
   const runCompletion = async (currentMessages) => {
+    if (!openai) {
+      setMessages(prev => [...prev, {
+        sender: 'gpt',
+        text: 'API Key Error: No active Groq API Key was found. Please open "API Settings" in the sidebar and enter your key to chat.'
+      }])
+      setIsLoading(false)
+      return
+    }
     try {
       // Build conversation logs including system prompt and current message history
       const formattedHistory = [

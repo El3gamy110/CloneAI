@@ -8,6 +8,27 @@ function App() {
   const [newChatTrigger, setNewChatTrigger] = useState(0)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [customAlert, setCustomAlert] = useState(null)
+  
+  // API Key state: load from environment variables (.env) or localStorage fallback
+  const [groqApiKey, setGroqApiKey] = useState(
+    import.meta.env.VITE_GROQ_API_KEY || localStorage.getItem('cloneai_api_key') || ''
+  )
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [tempKey, setTempKey] = useState('')
+
+  // Show settings overlay automatically on mount if no API key is set
+  useEffect(() => {
+    if (!groqApiKey) {
+      setShowSettingsModal(true)
+    }
+  }, [groqApiKey])
+
+  // Sync temp key state with actual configured key when modal opens
+  useEffect(() => {
+    if (showSettingsModal) {
+      setTempKey(groqApiKey)
+    }
+  }, [showSettingsModal, groqApiKey])
 
   // Handle auto-dismiss for custom alert toast
   useEffect(() => {
@@ -30,11 +51,13 @@ function App() {
         onSelectQuery={(query) => setActiveQuery(query)}
         onShowSaved={() => triggerAlert('Saved messages is coming soon as a future feature! Stay tuned.')}
         onShowUpgrade={() => setShowUpgradeModal(true)}
+        onShowSettings={() => setShowSettingsModal(true)}
       />
       <Chat 
         activeQuery={activeQuery}
         clearActiveQuery={() => setActiveQuery('')}
         newChatTrigger={newChatTrigger}
+        apiKey={groqApiKey}
       />
 
       {/* Upgrade to Pro Modal */}
@@ -82,6 +105,64 @@ function App() {
             }}>
               Subscribe Now
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Settings / API Configuration Modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 bg-brand-bg/80 backdrop-blur-md flex items-center justify-center z-[1000] animate-modal-fade" onClick={() => groqApiKey && setShowSettingsModal(false)}>
+          <div className="bg-sidebar-bg border border-accent-teal/20 rounded-[1.6rem] p-[4rem] w-[90%] max-w-[45rem] relative shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex flex-col items-center text-center animate-modal-slide" onClick={(e) => e.stopPropagation()}>
+            {groqApiKey && (
+              <button className="absolute top-[1.6rem] right-[2rem] bg-transparent border-none text-white/40 text-[2.8rem] cursor-pointer leading-none transition-colors duration-200 hover:text-white" onClick={() => setShowSettingsModal(false)}>
+                &times;
+              </button>
+            )}
+            <h2 className="text-[2.4rem] font-semibold text-white font-display mb-[0.8rem] tracking-[-0.01em] mt-[1rem]">Configure Groq API Key</h2>
+            <p className="text-[1.4rem] text-white/50 mb-[2.4rem] leading-normal">
+              CloneAI runs entirely in your browser. To chat, please provide a Groq API Key. Your key is stored securely in your browser's local storage and sent directly to Groq's official server.
+            </p>
+            <input
+              type="password"
+              placeholder="gsk_..."
+              className="w-full h-[5rem] bg-card-bg border border-accent-teal/15 rounded-xl px-4 text-white text-[1.6rem] font-display outline-none mb-4 focus:border-accent-teal/40"
+              value={tempKey}
+              onChange={(e) => setTempKey(e.target.value)}
+            />
+            <a 
+              href="https://console.groq.com/keys" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[1.3rem] text-accent-teal hover:underline mb-6 block"
+            >
+              Get a free Groq API Key from the Console →
+            </a>
+            <div className="flex gap-4 w-full">
+              {groqApiKey && (
+                <button 
+                  className="flex-1 h-[5rem] bg-transparent border border-white/20 rounded-lg text-white text-[1.6rem] font-semibold font-display cursor-pointer hover:bg-white/10 transition-colors"
+                  onClick={() => setShowSettingsModal(false)}
+                >
+                  Cancel
+                </button>
+              )}
+              <button 
+                className="flex-1 h-[5rem] bg-gradient-to-br from-accent-teal-light to-accent-teal-dark border-none rounded-lg text-white text-[1.6rem] font-semibold font-display cursor-pointer transition-all duration-250 ease-out hover:from-accent-teal hover:to-accent-teal-deep hover:shadow-[0_4px_16px_rgba(20,184,166,0.35)]"
+                onClick={() => {
+                  const cleanKey = tempKey.trim()
+                  if (!cleanKey) {
+                    triggerAlert('Please enter a valid API key', 'info')
+                    return
+                  }
+                  localStorage.setItem('cloneai_api_key', cleanKey)
+                  setGroqApiKey(cleanKey)
+                  setShowSettingsModal(false)
+                  triggerAlert('API Key configured successfully!', 'success')
+                }}
+              >
+                Save
+              </button>
+            </div>
           </div>
         </div>
       )}

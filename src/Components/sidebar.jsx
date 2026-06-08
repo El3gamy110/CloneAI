@@ -4,7 +4,7 @@ import messageIcon from '../assets/message.svg'
 import bookmarkIcon from '../assets/bookmark.svg'
 import rocketIcon from '../assets/rocket.svg'
 
-function Sidebar({ onNewChat, onSelectQuery, onShowSaved, onShowUpgrade }) {
+function Sidebar({ onNewChat, onSelectQuery, onShowSaved, onShowUpgrade, onShowSettings }) {
   return (
     <div className="w-[320px] max-w-[320px] min-w-[320px] h-screen bg-sidebar-bg border-r border-accent-teal/8 flex flex-col p-[3rem_2.4rem] justify-between">
       <div className="flex flex-col gap-[3.5rem] flex-grow">
@@ -35,6 +35,13 @@ function Sidebar({ onNewChat, onSelectQuery, onShowSaved, onShowUpgrade }) {
         <button className="w-full flex items-center gap-[1.8rem] bg-transparent border-none text-white/85 text-[1.6rem] font-medium font-display cursor-pointer p-[0.6rem_0.5rem] transition-all duration-250 ease-out text-left rounded hover:text-accent-teal hover:bg-accent-teal/[0.04] hover:pl-[1rem]" onClick={onShowSaved}>
           <img src={bookmarkIcon} alt="bookmark icon" className="w-[1.8rem] h-[1.8rem]" />
           Saved
+        </button>
+        <button className="w-full flex items-center gap-[1.8rem] bg-transparent border-none text-white/85 text-[1.6rem] font-medium font-display cursor-pointer p-[0.6rem_0.5rem] transition-all duration-250 ease-out text-left rounded hover:text-accent-teal hover:bg-accent-teal/[0.04] hover:pl-[1rem]" onClick={onShowSettings}>
+          <svg className="w-[1.8rem] h-[1.8rem]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          API Settings
         </button>
         <button className="w-full flex items-center gap-[1.8rem] bg-transparent border-none text-white/85 text-[1.6rem] font-medium font-display cursor-pointer p-[0.6rem_0.5rem] transition-all duration-250 ease-out text-left rounded hover:text-accent-teal hover:bg-accent-teal/[0.04] hover:pl-[1rem]" onClick={onShowUpgrade}>
           <img src={rocketIcon} alt="rocket icon" className="w-[1.8rem] h-[1.8rem]" />
