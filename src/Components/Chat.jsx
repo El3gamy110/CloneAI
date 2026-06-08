@@ -4,7 +4,7 @@ import userIcon from '../assets/user-icon.png'
 import chatgptIcon from '../assets/chatgpt.png'
 import sendIcon from '../assets/send.svg'
 
-function Chat({ activeQuery, clearActiveQuery, newChatTrigger, apiKey }) {
+function Chat({ onToggleSidebar, activeQuery, clearActiveQuery, newChatTrigger, apiKey }) {
   // Memoize OpenAI client to avoid recreating on every render or crashing on load when key is empty
   const openai = useMemo(() => {
     if (!apiKey) return null
@@ -135,7 +135,20 @@ function Chat({ activeQuery, clearActiveQuery, newChatTrigger, apiKey }) {
 
   return (
     <div className="flex-1 flex flex-col h-screen bg-brand-bg relative overflow-hidden">
-      <div className="flex-1 overflow-y-auto p-[6rem_2.4rem_2rem_2.4rem] flex justify-center custom-scrollbar">
+      {/* Mobile Top Navbar */}
+      <div className="md:hidden flex items-center px-[2rem] bg-sidebar-bg border-b border-accent-teal/8 text-white h-[6rem] w-full shrink-0">
+        <button 
+          className="p-2 mr-3 text-white hover:text-accent-teal cursor-pointer"
+          onClick={onToggleSidebar}
+        >
+          <svg className="w-[2.4rem] h-[2.4rem]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <span className="text-[2rem] font-semibold font-display tracking-[-0.01em]">CloneAI</span>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-[3rem_1.6rem_2rem_1.6rem] md:p-[6rem_2.4rem_2rem_2.4rem] flex justify-center custom-scrollbar">
         <div className="w-full max-w-[80rem] flex flex-col gap-[3.5rem]">
           {messages.map((msg, index) => (
             msg.sender === 'user' ? (
@@ -172,7 +185,7 @@ function Chat({ activeQuery, clearActiveQuery, newChatTrigger, apiKey }) {
       </div>
 
       {/* Input Section */}
-      <div className="p-[2rem_2.4rem_3rem_2.4rem] flex flex-col items-center bg-gradient-to-b from-transparent via-brand-bg/25 to-brand-bg">
+      <div className="p-[1.6rem_1.6rem_2rem_1.6rem] md:p-[2rem_2.4rem_3rem_2.4rem] flex flex-col items-center bg-gradient-to-b from-transparent via-brand-bg/25 to-brand-bg">
         <div className="w-full max-w-[80rem] relative flex items-center">
           <input
             type="text"

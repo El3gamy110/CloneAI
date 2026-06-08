@@ -15,6 +15,9 @@ function App() {
   )
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [tempKey, setTempKey] = useState('')
+  
+  // Mobile sidebar open state
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // Show settings overlay automatically on mount if no API key is set
   useEffect(() => {
@@ -45,8 +48,18 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex bg-brand-bg text-white font-sans antialiased">
+    <div className="min-h-screen flex bg-brand-bg text-white font-sans antialiased overflow-x-hidden relative">
+      {/* Mobile Sidebar Backdrop Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden cursor-pointer" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       <SideBar 
+        sidebarOpen={sidebarOpen}
+        onCloseSidebar={() => setSidebarOpen(false)}
         onNewChat={() => setNewChatTrigger(prev => prev + 1)}
         onSelectQuery={(query) => setActiveQuery(query)}
         onShowSaved={() => triggerAlert('Saved messages is coming soon as a future feature! Stay tuned.')}
@@ -54,6 +67,7 @@ function App() {
         onShowSettings={() => setShowSettingsModal(true)}
       />
       <Chat 
+        onToggleSidebar={() => setSidebarOpen(prev => !prev)}
         activeQuery={activeQuery}
         clearActiveQuery={() => setActiveQuery('')}
         newChatTrigger={newChatTrigger}
